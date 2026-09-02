@@ -1,36 +1,53 @@
 # stupid-skills
 
-쓸모없고, 진지하지 않고, 이상하게 웃긴 AI 스킬 모음.
+A collection of useless, unserious, and delightfully stupid AI skills.
 
-이 레포의 목적은 생산성을 높이는 것이 아니라, AI에게 일부러 사소하고 무의미한 행동을 시켜 보는 것이다. 스킬 시스템의 작동 방식을 가볍게 실험하거나, 대화에 쓸데없는 제약을 추가하고 싶을 때 사용한다.
+The goal of this repository is not to improve productivity. It is to give an AI deliberately meaningless behaviors and make the skill system fun to experiment with.
 
-## 포함된 스킬
+English is the default repository language and the default variant language. Each language variant is packaged as an independent skill so it can be installed and enabled on its own.
 
-| 스킬 | 설명 |
-| --- | --- |
-| [`kkwettu`](skills/kkwettu) | 모든 일반 텍스트를 “꿰뚜꿰뚜”로 바꾼다 |
+## Available skills
 
-## 사용법
+| Skill | Description | Default |
+| --- | --- | --- |
+| [`kkwettu-en-US`](skills/kkwettu-en-US) | Replaces ordinary prose with `kkwettu` | Yes |
+| [`kkwettu-ko`](skills/kkwettu-ko) | Replaces ordinary prose with `꿰뚜` | No |
 
-원하는 스킬 디렉터리를 Codex의 스킬 디렉터리에 복사해 사용한다.
+## Install a skill
+
+Copy one skill directory into the Codex skills directory.
 
 ```sh
-cp -R skills/kkwettu "$CODEX_HOME/skills/"
+cp -R skills/kkwettu-en-US "$CODEX_HOME/skills/"
 ```
 
-스킬은 한 번에 하나씩 사용하는 것을 권장한다. 여러 개를 동시에 켜면 의미 없는 지시가 충돌할 수 있다.
+To use the Korean variant instead:
 
-## 주의
+```sh
+cp -R skills/kkwettu-ko "$CODEX_HOME/skills/"
+```
 
-이 스킬들은 장난과 실험을 위한 것이다. 중요한 의사결정, 코드 작성, 번역, 업무용 답변에는 사용하지 않는다. 스킬이 활성화되어 있더라도 안전·정확성·사용자 요청보다 우선하지 않는다.
+Use one variant at a time. Combining multiple variants can produce conflicting instructions.
 
-## 기여
+## Design principles
 
-새로운 멍청한 스킬을 추가할 때는 다음을 포함한다.
+- Every installable variant has its own `SKILL.md`.
+- Skill and directory names use stable ASCII slugs with a locale suffix.
+- Documentation and metadata are written in English by default.
+- Variants may have completely different nonsense behaviors, not just translated instructions.
 
-- 짧고 명확한 `SKILL.md`
-- 재미있는 예시 입력과 출력
-- 실제 작업을 방해할 수 있는 경우의 주의사항
+## Safety note
+
+These skills are for jokes and experiments. Do not use them for important decisions, production code, translation, or work that requires accurate communication. A silly skill never overrides safety, correctness, or the user's explicit request.
+
+## Contributing
+
+When adding a new stupid skill, include:
+
+- A short and clear `SKILL.md`
+- A funny example input and output
+- A warning when the behavior could interfere with real work
+- An explicit locale suffix when the behavior is language-specific
 
 ## License
 
