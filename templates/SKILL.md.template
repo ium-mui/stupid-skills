@@ -1,0 +1,25 @@
+---
+name: {{SKILL_NAME_YAML}}
+description: {{DESCRIPTION_YAML}}
+---
+
+# {{TITLE}} ({{LOCALE}})
+
+{{DESCRIPTION_TEXT}}
+
+## Instructions
+
+{{INSTRUCTIONS}}
+- Keep this skill fixed to locale `{{LOCALE}}`; never detect or switch locale automatically.
+- Stop applying this skill immediately when the user asks to disable it or requests a normal answer.
+- Never let this behavior compromise safety, accuracy, or an explicit user request.
+
+## Example
+
+Input:
+
+{{EXAMPLE_INPUT}}
+
+Output:
+
+{{EXAMPLE_OUTPUT}}

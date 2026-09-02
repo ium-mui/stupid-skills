@@ -1,55 +1,86 @@
 # stupid-skills
 
-A collection of useless, unserious, and delightfully stupid AI skills.
+[한국어](README.ko.md)
 
-The goal of this repository is not to improve productivity. It is to give an AI deliberately meaningless behaviors and make the skill system fun to experiment with.
+A searchable collection of useless, unserious, and delightfully stupid AI skills.
 
-English is the default repository language. Every language-specific behavior is packaged as an independent skill so users can install and invoke exactly the variant they want.
+Every installable skill starts with `stupid-`, and every locale-specific behavior is a separate skill. English is the canonical documentation language; Korean translations are maintained alongside the English documents.
 
 ## Available skills
 
-| Skill | Description | Default |
+| Skill | Locale | Behavior |
 | --- | --- | --- |
-| [`stupid-kkwettu-en-us`](skills/stupid-kkwettu-en-us) | Replaces ordinary prose with `kkwettu` | Yes |
-| [`stupid-kkwettu-ko`](skills/stupid-kkwettu-ko) | Replaces ordinary prose with `꿰뚜` | No |
+| [`stupid-kkwettu-en-us`](skills/stupid-kkwettu-en-us) | English (US) | Replaces ordinary prose with `kkwettu` |
+| [`stupid-kkwettu-ko`](skills/stupid-kkwettu-ko) | Korean | Replaces ordinary prose with `꿰뚜` |
 
-## Install a skill
+## Install and use
 
-Copy one skill directory into the Codex skills directory.
-
-```sh
-cp -R skills/stupid-kkwettu-en-us "$CODEX_HOME/skills/"
-```
-
-To use the Korean variant instead:
+Clone the repository and copy the skill variant you want into your Codex skills directory.
 
 ```sh
-cp -R skills/stupid-kkwettu-ko "$CODEX_HOME/skills/"
+git clone https://github.com/ium-mui/stupid-skills.git
+cd stupid-skills
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+cp -R skills/stupid-kkwettu-en-us "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
-Use one variant at a time. Combining multiple variants can produce conflicting instructions.
+Restart or reload Codex if needed, then invoke the installed skill by name, for example `$stupid-kkwettu-en-us`.
 
-## Design principles
+Install one locale variant of the same behavior at a time. A variant never detects or switches locale automatically.
 
-- Every installable variant has its own `SKILL.md`.
-- Skill names follow `stupid-<behavior>-<locale>`.
-- Skill and directory names use lowercase ASCII slugs with a locale suffix.
-- Documentation and metadata are written in English by default.
-- Variants may have completely different nonsense behaviors, not just translated instructions.
-- Skills never switch locale automatically. The installed or invoked variant determines the behavior.
+## Add a new skill
+
+Run the interactive generator:
+
+```sh
+make new-skill
+```
+
+It asks for the behavior slug, locale, description, instructions, and an example. It then creates:
+
+```text
+skills/stupid-<behavior>-<locale>/SKILL.md
+```
+
+Review the generated file, add the skill to both README catalogs, and run:
+
+```sh
+make check
+```
+
+The check validates every skill and runs the harness tests. Pull requests and pushes to `main` run the same check in GitHub Actions.
+
+## Supported locales
+
+| Locale | Language | Default |
+| --- | --- | --- |
+| `en-us` | English (United States) | Yes |
+| `ko` | Korean | No |
+
+Supported locales and the `stupid` prefix are defined in [`config/repository.json`](config/repository.json).
+
+## Repository structure
+
+```text
+stupid-skills/
+├── skills/                  Installable locale-specific skills
+├── scripts/                 Generator and validation harness
+├── templates/               New-skill template
+├── tests/                   Harness tests
+├── config/repository.json   Prefix and locale configuration
+├── AGENTS.md                Repository rules for coding agents
+├── CONTRIBUTING.md          Contribution guide
+└── README.ko.md             Korean README translation
+```
+
+## Documentation
+
+- [Contribution guide](CONTRIBUTING.md) · [한국어](CONTRIBUTING.ko.md)
+- [Agent rules](AGENTS.md) · [한국어](AGENTS.ko.md)
 
 ## Safety note
 
-These skills are for jokes and experiments. Do not use them for important decisions, production code, translation, or work that requires accurate communication. A silly skill never overrides safety, correctness, or the user's explicit request.
-
-## Contributing
-
-When adding a new stupid skill, include:
-
-- A short and clear `SKILL.md`
-- A funny example input and output
-- A warning when the behavior could interfere with real work
-- An explicit locale suffix when the behavior is language-specific
+These skills are for jokes and experiments. Do not use them for important decisions, production work, or tasks that require accurate communication. A silly skill never overrides safety, correctness, or an explicit user request.
 
 ## License
 

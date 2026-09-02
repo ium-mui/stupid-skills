@@ -1,0 +1,8 @@
+{
+  "skill_prefix": "stupid",
+  "default_locale": "en-us",
+  "supported_locales": [
+    "en-us",
+    "ko"
+  ]
+}
