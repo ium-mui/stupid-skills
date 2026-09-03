@@ -6,6 +6,7 @@ Contributions should keep stupid skills easy to discover, install, and understan
 
 ## Naming rules
 
+- Group variants under `skills/<behavior>/`.
 - Use `stupid-<behavior>-<locale>`.
 - Use lowercase ASCII letters, digits, and single hyphens.
 - Keep the name shorter than 64 characters.
@@ -15,10 +16,12 @@ Contributions should keep stupid skills easy to discover, install, and understan
 Examples:
 
 ```text
-stupid-kkwettu-en-us
-stupid-kkwettu-ko
-stupid-random-footnote-en-us
+skills/kkwettu/stupid-kkwettu-en-us/SKILL.md
+skills/kkwettu/stupid-kkwettu-ko/SKILL.md
+skills/random-footnote/stupid-random-footnote-en-us/SKILL.md
 ```
+
+The family directory is only for repository navigation. It must not contain a `SKILL.md` or other files. The nested `stupid-*` directory is the installable skill and must remain self-contained when copied out of its family.
 
 ## Locale rules
 
@@ -36,7 +39,7 @@ Run:
 make new-skill
 ```
 
-The generator will refuse unsupported locales, invalid names, and existing target directories. After generation:
+The generator creates the family directory when needed and refuses unsupported locales, invalid names, and existing target directories. After generation:
 
 1. Review the generated `SKILL.md` and make its behavior unambiguous.
 2. Add a concise, discriminating frontmatter description.

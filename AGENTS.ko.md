@@ -6,10 +6,12 @@
 
 ## 스킬
 
-- `skills/` 바로 아래의 각 폴더를 독립적으로 설치 가능한 스킬 하나로 취급합니다.
+- `skills/` 바로 아래의 각 폴더는 저장소 탐색에만 사용하는 동작 패밀리로 취급합니다.
+- 독립적으로 설치 가능한 각 스킬은 `skills/<behavior>/stupid-<behavior>-<locale>/`에 둡니다.
 - 스킬 이름은 영문 소문자, 숫자와 하이픈을 사용한 `stupid-<behavior>-<locale>` 형식으로 작성합니다.
 - 폴더 이름과 YAML frontmatter의 `name`을 동일하게 유지합니다.
 - 모든 스킬 폴더 루트에 대문자 `SKILL.md`를 둡니다.
+- 동작 패밀리 폴더 바로 아래에는 `SKILL.md`나 다른 파일을 두지 않습니다.
 - `config/repository.json`에 선언된 언어만 사용합니다.
 - 각 언어 변형을 고정합니다. 자동 언어 감지나 다른 변형으로의 fallback을 추가하지 않습니다.
 - 비어 있는 리소스 폴더를 추가하지 않습니다. 실제로 필요한 경우에만 `scripts/`, `references/`, `assets/` 또는 `agents/`를 추가합니다.

@@ -4,14 +4,14 @@
 
 A searchable collection of useless, unserious, and delightfully stupid AI skills.
 
-Every installable skill starts with `stupid-`, and every locale-specific behavior is a separate skill. English is the canonical documentation language; Korean translations are maintained alongside the English documents.
+Every installable skill starts with `stupid-`, and every locale-specific behavior is a separate skill. Variants of the same behavior are grouped under `skills/<behavior>/`. English is the canonical documentation language; Korean translations are maintained alongside the English documents.
 
 ## Available skills
 
 | Skill | Locale | Behavior |
 | --- | --- | --- |
-| [`stupid-kkwettu-en-us`](skills/stupid-kkwettu-en-us) | English (US) | Replaces ordinary prose with `kkwettu` |
-| [`stupid-kkwettu-ko`](skills/stupid-kkwettu-ko) | Korean | Replaces ordinary prose with `꿰뚜` |
+| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | English (US) | Replaces ordinary prose with `kkwettu` |
+| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | Korean | Replaces ordinary prose with `꿰뚜` |
 
 ## Install and use
 
@@ -21,7 +21,7 @@ Clone the repository and copy the skill variant you want into your Codex skills 
 git clone https://github.com/ium-mui/stupid-skills.git
 cd stupid-skills
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R skills/stupid-kkwettu-en-us "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R skills/kkwettu/stupid-kkwettu-en-us "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
 Restart or reload Codex if needed, then invoke the installed skill by name, for example `$stupid-kkwettu-en-us`.
@@ -39,7 +39,7 @@ make new-skill
 It asks for the behavior slug, locale, description, instructions, and an example. It then creates:
 
 ```text
-skills/stupid-<behavior>-<locale>/SKILL.md
+skills/<behavior>/stupid-<behavior>-<locale>/SKILL.md
 ```
 
 Review the generated file, add the skill to both README catalogs, and run:
@@ -63,7 +63,12 @@ Supported locales and the `stupid` prefix are defined in [`config/repository.jso
 
 ```text
 stupid-skills/
-├── skills/                  Installable locale-specific skills
+├── skills/
+│   └── kkwettu/             Behavior family; not directly installable
+│       ├── stupid-kkwettu-en-us/
+│       │   └── SKILL.md     Installable English variant
+│       └── stupid-kkwettu-ko/
+│           └── SKILL.md     Installable Korean variant
 ├── scripts/                 Generator and validation harness
 ├── templates/               New-skill template
 ├── tests/                   Harness tests

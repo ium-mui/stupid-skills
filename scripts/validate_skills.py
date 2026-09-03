@@ -38,55 +38,81 @@ def parse_frontmatter(text: str) -> dict[str, str]:
 def validate(skills_dir: Path, config_path: Path = CONFIG_PATH) -> list[str]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     prefix = f"{config['skill_prefix']}-"
-    locales = sorted((str(item) for item in config["supported_locales"]), key=len, reverse=True)
+    locales = {str(item) for item in config["supported_locales"]}
     errors: list[str] = []
 
     if not skills_dir.is_dir():
         return [f"missing skills directory: {skills_dir}"]
 
-    entries = sorted(skills_dir.iterdir())
-    skill_dirs = [entry for entry in entries if entry.is_dir()]
-    for entry in entries:
+    root_entries = sorted(skills_dir.iterdir())
+    family_dirs = [entry for entry in root_entries if entry.is_dir()]
+    for entry in root_entries:
         if not entry.is_dir():
             errors.append(f"unexpected file directly under skills/: {entry.name}")
 
-    if not skill_dirs:
-        errors.append("skills/ must contain at least one skill directory")
+    if not family_dirs:
+        errors.append("skills/ must contain at least one behavior family")
 
-    for skill_dir in skill_dirs:
-        name = skill_dir.name
-        label = f"{name}/SKILL.md"
-        if len(name) > 63:
-            errors.append(f"{name}: name must be shorter than 64 characters")
-        if not NAME_PATTERN.fullmatch(name):
-            errors.append(f"{name}: use lowercase letters, digits, and single hyphens only")
-        if not name.startswith(prefix):
-            errors.append(f"{name}: name must start with '{prefix}'")
+    for family_dir in family_dirs:
+        family = family_dir.name
+        if not NAME_PATTERN.fullmatch(family):
+            errors.append(f"{family}: family names must use lowercase letters, digits, and single hyphens")
+        if family.startswith(prefix):
+            errors.append(f"{family}: family names must not include the '{prefix}' prefix")
 
-        locale = next((item for item in locales if name.endswith(f"-{item}")), None)
-        if locale is None:
-            errors.append(f"{name}: name must end with a supported locale ({', '.join(locales)})")
-        elif name == f"{prefix}{locale}":
-            errors.append(f"{name}: behavior segment is missing")
+        family_entries = sorted(family_dir.iterdir())
+        skill_dirs = [entry for entry in family_entries if entry.is_dir()]
+        for entry in family_entries:
+            if not entry.is_dir():
+                errors.append(f"{family}/{entry.name}: files are not allowed at the family level")
+        if not skill_dirs:
+            errors.append(f"{family}: family must contain at least one locale-specific skill")
 
-        skill_file = skill_dir / "SKILL.md"
-        if not skill_file.is_file():
-            errors.append(f"{label}: required file is missing")
-            continue
+        for skill_dir in skill_dirs:
+            name = skill_dir.name
+            label = f"{family}/{name}/SKILL.md"
+            if len(name) > 63:
+                errors.append(f"{family}/{name}: name must be shorter than 64 characters")
+            if not NAME_PATTERN.fullmatch(name):
+                errors.append(f"{family}/{name}: use lowercase letters, digits, and single hyphens only")
 
-        text = skill_file.read_text(encoding="utf-8")
-        frontmatter = parse_frontmatter(text)
-        if not frontmatter:
-            errors.append(f"{label}: valid YAML-style frontmatter is required")
-            continue
-        if frontmatter.get("name") != name:
-            errors.append(f"{label}: frontmatter name must match the directory name")
-        if not frontmatter.get("description", "").strip():
-            errors.append(f"{label}: frontmatter description must not be empty")
-        if "TODO" in text or "{{" in text or "}}" in text:
-            errors.append(f"{label}: unfinished template markers are not allowed")
+            matching_locales = [
+                locale for locale in locales if name == f"{prefix}{family}-{locale}"
+            ]
+            if not matching_locales:
+                choices = ", ".join(sorted(locales))
+                errors.append(
+                    f"{family}/{name}: expected '{prefix}{family}-<locale>' with one of: {choices}"
+                )
+
+            skill_file = skill_dir / "SKILL.md"
+            if not skill_file.is_file():
+                errors.append(f"{label}: required file is missing")
+                continue
+
+            text = skill_file.read_text(encoding="utf-8")
+            frontmatter = parse_frontmatter(text)
+            if not frontmatter:
+                errors.append(f"{label}: valid YAML-style frontmatter is required")
+                continue
+            if frontmatter.get("name") != name:
+                errors.append(f"{label}: frontmatter name must match the skill directory name")
+            if not frontmatter.get("description", "").strip():
+                errors.append(f"{label}: frontmatter description must not be empty")
+            if "TODO" in text or "{{" in text or "}}" in text:
+                errors.append(f"{label}: unfinished template markers are not allowed")
 
     return errors
+
+
+def count_skills(skills_dir: Path) -> int:
+    return sum(
+        1
+        for family in skills_dir.iterdir()
+        if family.is_dir()
+        for skill in family.iterdir()
+        if skill.is_dir()
+    )
 
 
 def main() -> int:
@@ -98,7 +124,7 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    print(f"Validated {len([item for item in args.skills_dir.iterdir() if item.is_dir()])} skills.")
+    print(f"Validated {count_skills(args.skills_dir)} skills.")
     return 0
 
 

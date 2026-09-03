@@ -6,6 +6,7 @@
 
 ## 이름 규칙
 
+- 언어 변형을 `skills/<behavior>/` 아래에 모읍니다.
 - `stupid-<behavior>-<locale>` 형식을 사용합니다.
 - 영문 소문자, 숫자와 한 개의 하이픈만 사용합니다.
 - 이름은 64자 미만이어야 합니다.
@@ -15,10 +16,12 @@
 예시:
 
 ```text
-stupid-kkwettu-en-us
-stupid-kkwettu-ko
-stupid-random-footnote-en-us
+skills/kkwettu/stupid-kkwettu-en-us/SKILL.md
+skills/kkwettu/stupid-kkwettu-ko/SKILL.md
+skills/random-footnote/stupid-random-footnote-en-us/SKILL.md
 ```
+
+패밀리 폴더는 저장소 탐색에만 사용합니다. 패밀리 폴더에는 `SKILL.md`나 다른 파일을 두지 않습니다. 내부의 `stupid-*` 폴더가 실제 설치 단위이며 패밀리 밖으로 복사해도 완전한 스킬이어야 합니다.
 
 ## 언어 규칙
 
@@ -36,7 +39,7 @@ stupid-random-footnote-en-us
 make new-skill
 ```
 
-생성기는 지원하지 않는 언어, 잘못된 이름과 이미 존재하는 대상 폴더를 거부합니다. 생성 후에는 다음 작업을 수행합니다.
+생성기는 필요할 때 패밀리 폴더를 만들며, 지원하지 않는 언어, 잘못된 이름과 이미 존재하는 대상 폴더를 거부합니다. 생성 후에는 다음 작업을 수행합니다.
 
 1. 생성된 `SKILL.md`를 검토하고 동작을 명확하게 작성합니다.
 2. frontmatter 설명은 짧고 다른 스킬과 구분되게 작성합니다.

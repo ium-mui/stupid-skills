@@ -31,6 +31,7 @@ class HarnessTests(unittest.TestCase):
                 skills_dir=skills_dir,
             )
             self.assertEqual(output.parent.name, "stupid-tiny-yell-ko")
+            self.assertEqual(output.parent.parent.name, "tiny-yell")
             self.assertEqual(validate(skills_dir), [])
 
     def test_existing_skill_is_not_overwritten(self) -> None:
@@ -48,6 +49,17 @@ class HarnessTests(unittest.TestCase):
             create_skill(**arguments)
             with self.assertRaises(FileExistsError):
                 create_skill(**arguments)
+
+    def test_flat_skill_layout_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            skills_dir = Path(temporary_directory) / "skills"
+            flat_skill = skills_dir / "stupid-beep-ko"
+            flat_skill.mkdir(parents=True)
+            (flat_skill / "SKILL.md").write_text(
+                '---\nname: "stupid-beep-ko"\ndescription: "Beep."\n---\n',
+                encoding="utf-8",
+            )
+            self.assertNotEqual(validate(skills_dir), [])
 
 
 if __name__ == "__main__":

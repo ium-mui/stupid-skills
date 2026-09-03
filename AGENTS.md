@@ -6,10 +6,12 @@ These rules apply to every automated agent and contributor working in this repos
 
 ## Skills
 
-- Treat each direct child of `skills/` as one independently installable skill.
+- Treat each direct child of `skills/` as a behavior family used only for repository navigation.
+- Place each independently installable skill at `skills/<behavior>/stupid-<behavior>-<locale>/`.
 - Name skills `stupid-<behavior>-<locale>` using lowercase ASCII letters, digits, and hyphens.
 - Keep the folder name and the `name` in YAML frontmatter identical.
 - Keep a required uppercase `SKILL.md` at the root of every skill folder.
+- Do not place `SKILL.md` or other files directly in a behavior family folder.
 - Use only locales declared in `config/repository.json`.
 - Keep each locale variant fixed. Never add automatic locale detection or fallback to another variant.
 - Do not add empty resource directories. Add `scripts/`, `references/`, `assets/`, or `agents/` only when the skill actually needs them.

@@ -68,7 +68,7 @@ def create_skill(
         raise ValueError("generated skill name must be shorter than 64 characters")
 
     target_root = skills_dir or REPO_ROOT / "skills"
-    target = target_root / skill_name
+    target = target_root / behavior_slug / skill_name
     if target.exists():
         raise FileExistsError(f"skill already exists: {target}")
 
