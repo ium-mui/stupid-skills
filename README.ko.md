@@ -4,7 +4,7 @@
 
 쓸모없고 진지하지 않으며 이상하게 즐거운 AI 스킬을 쉽게 검색할 수 있도록 모아 둔 저장소입니다.
 
-설치 가능한 모든 스킬 이름은 `stupid-`로 시작하며, 언어별 동작은 각각 독립된 스킬로 제공됩니다. 같은 동작의 언어 변형은 `skills/<behavior>/` 아래에 모읍니다. 영어 문서를 원본으로 관리하고 한국어 번역 문서를 함께 유지합니다.
+설치 가능한 모든 스킬 이름은 `stupid-`로 시작하며 `skills/<behavior>/` 아래의 문서화된 동작 패밀리에 속합니다. 언어별 동작은 각각 독립된 스킬로 제공하고, 언어 중립 동작은 로케일 접미사가 없는 스킬로 제공합니다. 영어 문서를 원본으로 관리하고 한국어 번역 문서를 함께 유지합니다.
 
 ## 제공 스킬
 
@@ -36,13 +36,17 @@ cp -R skills/kkwettu/stupid-kkwettu-ko "${CODEX_HOME:-$HOME/.codex}/skills/"
 make new-skill
 ```
 
-생성기가 동작 이름, 언어, 설명, 지침과 예시를 질문한 후 다음 구조를 만듭니다.
+생성기가 동작 이름, 언어 또는 언어 중립 모드, 설명, 지침과 예시를 질문합니다. 패밀리를 처음 생성할 때는 영문·한국어 패밀리 설명도 함께 입력받은 후 다음 구조를 만듭니다.
 
 ```text
-skills/<behavior>/stupid-<behavior>-<locale>/SKILL.md
+skills/<behavior>/
+├── README.md
+├── README.ko.md
+└── stupid-<behavior>[-<locale>]/
+    └── SKILL.md
 ```
 
-생성된 파일을 검토하고 영어·한국어 README 목록에 스킬을 추가한 다음 아래 명령을 실행합니다.
+생성기는 두 패밀리 README의 변형 목록을 자동으로 갱신합니다. 생성된 파일을 검토하고 최상위 영어·한국어 README 목록에 스킬을 추가한 다음 아래 명령을 실행합니다.
 
 ```sh
 make check
@@ -59,12 +63,16 @@ make check
 
 지원 언어와 `stupid` 접두사는 [`config/repository.json`](config/repository.json)에서 관리합니다.
 
+언어 중립 스킬은 `stupid-shrug`처럼 로케일 접미사를 사용하지 않지만 `skills/shrug/` 안에서 두 패밀리 README와 함께 관리합니다.
+
 ## 저장소 구조
 
 ```text
 stupid-skills/
 ├── skills/
 │   └── kkwettu/             동작 패밀리이며 직접 설치하지 않음
+│       ├── README.md         영문 패밀리 설명
+│       ├── README.ko.md      한국어 패밀리 설명
 │       ├── stupid-kkwettu-en-us/
 │       │   └── SKILL.md     설치 가능한 영어 변형
 │       └── stupid-kkwettu-ko/

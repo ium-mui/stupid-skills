@@ -12,6 +12,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO_ROOT / "config" / "repository.json"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+FAMILY_DOCS = {"README.md", "README.ko.md"}
+VARIANTS_START = "<!-- variants:start -->"
+VARIANTS_END = "<!-- variants:end -->"
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -63,10 +66,14 @@ def validate(skills_dir: Path, config_path: Path = CONFIG_PATH) -> list[str]:
         family_entries = sorted(family_dir.iterdir())
         skill_dirs = [entry for entry in family_entries if entry.is_dir()]
         for entry in family_entries:
-            if not entry.is_dir():
-                errors.append(f"{family}/{entry.name}: files are not allowed at the family level")
+            if entry.is_file() and entry.name not in FAMILY_DOCS:
+                errors.append(f"{family}/{entry.name}: unexpected file at the family level")
+        for filename in sorted(FAMILY_DOCS):
+            family_doc = family_dir / filename
+            if not family_doc.is_file():
+                errors.append(f"{family}/{filename}: required family documentation is missing")
         if not skill_dirs:
-            errors.append(f"{family}: family must contain at least one locale-specific skill")
+            errors.append(f"{family}: family must contain at least one installable skill")
 
         for skill_dir in skill_dirs:
             name = skill_dir.name
@@ -76,13 +83,13 @@ def validate(skills_dir: Path, config_path: Path = CONFIG_PATH) -> list[str]:
             if not NAME_PATTERN.fullmatch(name):
                 errors.append(f"{family}/{name}: use lowercase letters, digits, and single hyphens only")
 
-            matching_locales = [
-                locale for locale in locales if name == f"{prefix}{family}-{locale}"
-            ]
-            if not matching_locales:
+            localized_names = {f"{prefix}{family}-{locale}" for locale in locales}
+            language_neutral_name = f"{prefix}{family}"
+            if name != language_neutral_name and name not in localized_names:
                 choices = ", ".join(sorted(locales))
                 errors.append(
-                    f"{family}/{name}: expected '{prefix}{family}-<locale>' with one of: {choices}"
+                    f"{family}/{name}: expected '{language_neutral_name}' or "
+                    f"'{prefix}{family}-<locale>' with one of: {choices}"
                 )
 
             skill_file = skill_dir / "SKILL.md"
@@ -101,6 +108,30 @@ def validate(skills_dir: Path, config_path: Path = CONFIG_PATH) -> list[str]:
                 errors.append(f"{label}: frontmatter description must not be empty")
             if "TODO" in text or "{{" in text or "}}" in text:
                 errors.append(f"{label}: unfinished template markers are not allowed")
+
+        for filename in sorted(FAMILY_DOCS):
+            family_doc = family_dir / filename
+            if not family_doc.is_file():
+                continue
+            text = family_doc.read_text(encoding="utf-8")
+            if not text.strip():
+                errors.append(f"{family}/{filename}: family documentation must not be empty")
+            if VARIANTS_START not in text or VARIANTS_END not in text:
+                errors.append(f"{family}/{filename}: variant catalog markers are required")
+            else:
+                start = text.find(VARIANTS_START) + len(VARIANTS_START)
+                end = text.find(VARIANTS_END, start)
+                actual_catalog = text[start:end].strip()
+                expected_catalog = "\n".join(
+                    f"- [`{skill_dir.name}`]({skill_dir.name})"
+                    for skill_dir in sorted(skill_dirs)
+                )
+                if actual_catalog != expected_catalog:
+                    errors.append(
+                        f"{family}/{filename}: variant catalog must exactly match skill directories"
+                    )
+            if "TODO" in text or "{{" in text or "}}" in text:
+                errors.append(f"{family}/{filename}: unfinished template markers are not allowed")
 
     return errors
 

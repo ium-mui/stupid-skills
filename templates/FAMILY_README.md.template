@@ -1,0 +1,12 @@
+# {{TITLE}}
+
+[한국어](README.ko.md)
+
+{{FAMILY_DESCRIPTION_EN}}
+
+## Variants
+
+<!-- variants:start -->
+<!-- variants:end -->
+
+Each subdirectory listed above is an independently installable skill. Copy the variant directory itself, not this family directory, into your Codex skills directory.

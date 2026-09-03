@@ -4,7 +4,7 @@
 
 A searchable collection of useless, unserious, and delightfully stupid AI skills.
 
-Every installable skill starts with `stupid-`, and every locale-specific behavior is a separate skill. Variants of the same behavior are grouped under `skills/<behavior>/`. English is the canonical documentation language; Korean translations are maintained alongside the English documents.
+Every installable skill starts with `stupid-` and belongs to a documented behavior family under `skills/<behavior>/`. Locale-specific behaviors are separate skills; language-neutral behaviors use a skill without a locale suffix. English is the canonical documentation language, and Korean translations are maintained alongside the English documents.
 
 ## Available skills
 
@@ -36,13 +36,17 @@ Run the interactive generator:
 make new-skill
 ```
 
-It asks for the behavior slug, locale, description, instructions, and an example. It then creates:
+It asks for the behavior slug, locale or language-neutral mode, description, instructions, and an example. When creating a family for the first time, it also asks for English and Korean family descriptions. It then creates:
 
 ```text
-skills/<behavior>/stupid-<behavior>-<locale>/SKILL.md
+skills/<behavior>/
+├── README.md
+├── README.ko.md
+└── stupid-<behavior>[-<locale>]/
+    └── SKILL.md
 ```
 
-Review the generated file, add the skill to both README catalogs, and run:
+The generator automatically updates the variant list in both family READMEs. Review the generated files, add the skill to both top-level README catalogs, and run:
 
 ```sh
 make check
@@ -59,12 +63,16 @@ The check validates every skill and runs the harness tests. Pull requests and pu
 
 Supported locales and the `stupid` prefix are defined in [`config/repository.json`](config/repository.json).
 
+A language-neutral skill has no locale suffix, such as `stupid-shrug`, but it still lives inside `skills/shrug/` with both family README files.
+
 ## Repository structure
 
 ```text
 stupid-skills/
 ├── skills/
 │   └── kkwettu/             Behavior family; not directly installable
+│       ├── README.md         English family description
+│       ├── README.ko.md      Korean family description
 │       ├── stupid-kkwettu-en-us/
 │       │   └── SKILL.md     Installable English variant
 │       └── stupid-kkwettu-ko/
