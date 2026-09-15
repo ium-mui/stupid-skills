@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- |
 | [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-en-us` |
 | [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko` |
+| [`stupid-morse`](skills/morse/stupid-morse) | `neutral` | `morse` | Render ordinary conversational prose and prose file contents as International Morse code. Use when the user wants replies and written text transformed into Morse; preserve machine-readable syntax and exact literals. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/morse/stupid-morse` |
 <!-- skills:end -->
 
 ## 설치 및 사용
