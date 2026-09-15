@@ -90,7 +90,7 @@ stupid-skills/
 ## Documentation
 
 - [Contribution guide](CONTRIBUTING.md) · [한국어](CONTRIBUTING.ko.md)
-- [Agent rules](AGENTS.md) · [한국어](AGENTS.ko.md)
+- [Agent rules](AGENTS.md)
 
 ## Safety note
 

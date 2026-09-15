@@ -90,7 +90,7 @@ stupid-skills/
 ## 문서
 
 - [기여 가이드](CONTRIBUTING.ko.md) · [English](CONTRIBUTING.md)
-- [에이전트 규칙](AGENTS.ko.md) · [English](AGENTS.md)
+- [에이전트 규칙 (English)](AGENTS.md)
 
 ## 주의사항
 

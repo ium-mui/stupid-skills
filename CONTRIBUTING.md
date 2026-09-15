@@ -68,6 +68,6 @@ Use a language code such as `ko` when regional behavior does not matter. Use a r
 - Its family has synchronized English and Korean READMEs.
 - The folder contains a required `SKILL.md`.
 - A localized skill keeps its locale fixed and does not change automatically.
-- English and Korean public documentation remain synchronized.
+- English and Korean user-facing README and contribution documents remain synchronized; `AGENTS.md` stays English-only.
 - `make check` passes.
 - The generated catalog exposes a `$skill-installer` URL ending at the submitted `stupid-*` directory.
