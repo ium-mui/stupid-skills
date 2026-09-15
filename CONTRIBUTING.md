@@ -56,6 +56,12 @@ The generator creates both family READMEs when needed, updates their variant cat
 
 The generated catalog regions are delimited by HTML comments. Do not edit those regions manually; run `make sync-catalog` after moving or renaming a skill.
 
+## Review and approval
+
+Push the work to a branch and open a pull request against `main`. GitHub must report a successful `validate` check. Resolve every review conversation and wait for final approval from code owner `@sibfuhsree` after the latest push. New commits dismiss stale approvals, and the person who made the latest push cannot supply the required final approval.
+
+Direct pushes to `main`, force pushes, and branch deletion are blocked, including for administrators.
+
 ## Add a locale
 
 Add its lowercase locale identifier to `supported_locales` in `config/repository.json`, update both READMEs and contribution guides, and add at least one real skill or harness test using that locale.
@@ -71,3 +77,4 @@ Use a language code such as `ko` when regional behavior does not matter. Use a r
 - English and Korean user-facing README and contribution documents remain synchronized; `AGENTS.md` stays English-only.
 - `make check` passes.
 - The generated catalog exposes a `$skill-installer` URL ending at the submitted `stupid-*` directory.
+- Code owner `@sibfuhsree` approved the latest revision and all review conversations are resolved.

@@ -56,6 +56,12 @@ make new-skill
 
 자동 생성되는 카탈로그 영역은 HTML 주석으로 구분됩니다. 해당 영역을 직접 수정하지 말고 스킬을 이동하거나 이름을 바꾼 뒤 `make sync-catalog`를 실행하세요.
 
+## 검토 및 승인
+
+작업 브랜치를 push한 뒤 `main`을 대상으로 Pull Request를 만드세요. GitHub의 `validate` 검사가 성공해야 합니다. 모든 리뷰 대화를 해결하고 마지막 push 이후 코드 소유자 `@sibfuhsree`의 최종 승인을 받으세요. 새 커밋이 추가되면 이전 승인은 무효가 되며, 마지막으로 push한 사람은 필수 최종 승인을 직접 제공할 수 없습니다.
+
+관리자를 포함해 `main` 직접 push, force push와 브랜치 삭제는 차단됩니다.
+
 ## 언어 추가
 
 `config/repository.json`의 `supported_locales`에 소문자 로케일 식별자를 추가하고, 두 README와 기여 가이드를 수정한 다음 해당 언어를 사용하는 실제 스킬 또는 하네스 테스트를 하나 이상 추가합니다.
@@ -71,3 +77,4 @@ make new-skill
 - 사용자용 README와 기여 문서의 영어·한국어 버전이 함께 유지되고, `AGENTS.md`는 영문 단일 문서로 유지됩니다.
 - `make check`가 통과합니다.
 - 자동 생성된 목록의 `$skill-installer` URL이 제출한 `stupid-*` 폴더에서 끝납니다.
+- 코드 소유자 `@sibfuhsree`가 최신 변경을 승인했고 모든 리뷰 대화가 해결되었습니다.

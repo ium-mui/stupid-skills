@@ -54,7 +54,7 @@ skills/<behavior>/
 make check
 ```
 
-이 명령은 모든 스킬을 검증하고 하네스 테스트를 실행합니다. Pull Request와 `main` 브랜치 push에서도 GitHub Actions가 같은 검사를 실행합니다.
+이 명령은 모든 스킬을 검증하고 하네스 테스트를 실행합니다. Pull Request에서도 GitHub Actions가 같은 검사를 실행하며 merge 전에 코드 소유자 `@sibfuhsree`의 최종 승인이 필요합니다.
 
 ## 지원 언어
 

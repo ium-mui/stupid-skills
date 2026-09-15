@@ -7,6 +7,7 @@
 - [ ] The locale is declared in `config/repository.json` or the skill is language-neutral.
 - [ ] I ran `make check` successfully.
 - [ ] The generated `$skill-installer` URL ends at the submitted `stupid-*` directory.
+- [ ] This pull request is ready for final code-owner review by `@sibfuhsree`.
 
 Describe the joke behavior and include one representative input/output example.
 
@@ -19,5 +20,6 @@ Describe the joke behavior and include one representative input/output example.
 - [ ] 로케일이 `config/repository.json`에 선언되어 있거나 언어 중립 스킬입니다.
 - [ ] `make check`를 성공적으로 실행했습니다.
 - [ ] 자동 생성된 `$skill-installer` URL이 제출한 `stupid-*` 폴더에서 끝납니다.
+- [ ] 이 Pull Request는 코드 소유자 `@sibfuhsree`의 최종 검토를 받을 준비가 되었습니다.
 
 장난 동작을 설명하고 대표 입력/출력 예시 하나를 포함하세요.

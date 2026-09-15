@@ -32,4 +32,6 @@ These rules apply to every automated agent and contributor working in this repos
 - Prefer `make new-skill` when creating a skill.
 - Never overwrite an existing skill during generation.
 - Run `make check` after changing skills, configuration, templates, scripts, or tests.
+- Submit repository changes through a pull request; do not push directly to `main`.
+- Do not merge until the `validate` status check passes, all review conversations are resolved, and code owner `@sibfuhsree` approves the latest changes.
 - Preserve unrelated user changes and do not weaken validation to make invalid content pass.

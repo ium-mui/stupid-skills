@@ -54,7 +54,7 @@ The generator automatically updates the variant list in both family READMEs and 
 make check
 ```
 
-The check validates every skill and runs the harness tests. Pull requests and pushes to `main` run the same check in GitHub Actions.
+The check validates every skill and runs the harness tests. Pull requests run the same check in GitHub Actions and require final code-owner approval from `@sibfuhsree` before merge.
 
 ## Supported locales
 
