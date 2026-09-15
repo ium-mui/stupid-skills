@@ -8,23 +8,25 @@ Every installable skill starts with `stupid-` and belongs to a documented behavi
 
 ## Available skills
 
-| Skill | Locale | Behavior |
-| --- | --- | --- |
-| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | English (US) | Replaces ordinary prose with `kkwettu` |
-| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | Korean | Replaces ordinary prose with `꿰뚜` |
+<!-- skills:start -->
+| Skill | Locale | Behavior | Description |
+| --- | --- | --- | --- |
+| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. |
+| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. |
+<!-- skills:end -->
 
 ## Install and use
 
-Clone the repository and copy the skill variant you want into your Codex skills directory.
+Clone the repository, list the available variants, and install the one you want.
 
 ```sh
 git clone https://github.com/ium-mui/stupid-skills.git
 cd stupid-skills
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R skills/kkwettu/stupid-kkwettu-en-us "${CODEX_HOME:-$HOME/.codex}/skills/"
+python3 scripts/stupid_skills.py list
+python3 scripts/stupid_skills.py install stupid-kkwettu-en-us
 ```
 
-Restart or reload Codex if needed, then invoke the installed skill by name, for example `$stupid-kkwettu-en-us`.
+The installer defaults to `${CODEX_HOME}/skills` or `~/.codex/skills`. Pass `--destination PATH` to install elsewhere. It refuses to overwrite an existing skill. Restart or reload Codex if needed, then invoke the installed skill by name, for example `$stupid-kkwettu-en-us`.
 
 Install one locale variant of the same behavior at a time. A variant never detects or switches locale automatically.
 
@@ -46,7 +48,7 @@ skills/<behavior>/
     └── SKILL.md
 ```
 
-The generator automatically updates the variant list in both family READMEs. Review the generated files, add the skill to both top-level README catalogs, and run:
+The generator automatically updates the variant list in both family READMEs and the top-level English/Korean catalogs. Review the generated files and run:
 
 ```sh
 make check

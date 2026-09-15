@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -124,6 +125,106 @@ class HarnessTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.assertTrue(any("variant catalog" in error for error in validate(skills_dir)))
+
+    def test_consumer_cli_lists_and_installs_a_skill(self) -> None:
+        list_result = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "stupid_skills.py"), "list"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(list_result.returncode, 0, list_result.stderr)
+        self.assertIn("stupid-kkwettu-en-us", list_result.stdout)
+        self.assertIn("stupid-kkwettu-ko", list_result.stdout)
+        self.assertIn("Replace ordinary user-visible prose", list_result.stdout)
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            destination = Path(temporary_directory) / "skills"
+            install_result = subprocess.run(
+                [
+                    sys.executable,
+                    str(REPO_ROOT / "scripts" / "stupid_skills.py"),
+                    "install",
+                    "stupid-kkwettu-ko",
+                    "--destination",
+                    str(destination),
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            installed = destination / "stupid-kkwettu-ko" / "SKILL.md"
+            self.assertEqual(install_result.returncode, 0, install_result.stderr)
+            self.assertIn(
+                'name: "stupid-kkwettu-ko"', installed.read_text(encoding="utf-8")
+            )
+
+    def test_generator_synchronizes_top_level_catalogs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            repository_root = Path(temporary_directory)
+            skills_dir = repository_root / "skills"
+            for filename, heading in (
+                ("README.md", "# Test\n\n## Available skills"),
+                ("README.ko.md", "# 테스트\n\n## 제공 스킬"),
+            ):
+                (repository_root / filename).write_text(
+                    f"{heading}\n\n<!-- skills:start -->\n<!-- skills:end -->\n",
+                    encoding="utf-8",
+                )
+
+            create_skill(
+                behavior="tiny-yell",
+                locale="ko",
+                description="Turn ordinary prose into a tiny yell.",
+                instructions=["Replace ordinary prose with a tiny yell."],
+                example_input="안녕하세요",
+                example_output="꺅!",
+                family_description_en="A family of tiny yelling skills.",
+                family_description_ko="작게 소리치는 스킬 패밀리입니다.",
+                skills_dir=skills_dir,
+            )
+
+            self.assertIn(
+                "stupid-tiny-yell-ko",
+                (repository_root / "README.md").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "stupid-tiny-yell-ko",
+                (repository_root / "README.ko.md").read_text(encoding="utf-8"),
+            )
+
+    def test_stale_top_level_catalog_is_rejected(self) -> None:
+        errors = validate(REPO_ROOT / "skills", repository_root=REPO_ROOT)
+        self.assertEqual(errors, [])
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            repository_root = Path(temporary_directory)
+            skills_dir = repository_root / "skills"
+            output = create_skill(
+                behavior="blink",
+                locale="en-us",
+                description="Reply with a blink.",
+                instructions=["Reply with one blink."],
+                example_input="Hello",
+                example_output="blink",
+                family_description_en="A family of blinking skills.",
+                family_description_ko="눈을 깜빡이는 스킬 패밀리입니다.",
+                skills_dir=skills_dir,
+            )
+            for filename in ("README.md", "README.ko.md"):
+                (repository_root / filename).write_text(
+                    "# Catalog\n\n<!-- skills:start -->\nstale\n<!-- skills:end -->\n",
+                    encoding="utf-8",
+                )
+            self.assertTrue(output.is_file())
+            self.assertTrue(
+                any(
+                    "top-level skill catalog" in error
+                    for error in validate(skills_dir, repository_root=repository_root)
+                )
+            )
 
 
 if __name__ == "__main__":

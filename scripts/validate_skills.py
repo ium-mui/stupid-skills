@@ -8,6 +8,8 @@ import json
 import re
 from pathlib import Path
 
+from stupid_skills import parse_frontmatter, validate_root_catalogs
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO_ROOT / "config" / "repository.json"
@@ -17,28 +19,11 @@ VARIANTS_START = "<!-- variants:start -->"
 VARIANTS_END = "<!-- variants:end -->"
 
 
-def parse_frontmatter(text: str) -> dict[str, str]:
-    if not text.startswith("---\n"):
-        return {}
-    end = text.find("\n---\n", 4)
-    if end == -1:
-        return {}
-
-    values: dict[str, str] = {}
-    for line in text[4:end].splitlines():
-        if ":" not in line:
-            continue
-        key, raw_value = line.split(":", 1)
-        raw_value = raw_value.strip()
-        try:
-            value = json.loads(raw_value) if raw_value.startswith('"') else raw_value.strip("'\"")
-        except json.JSONDecodeError:
-            value = raw_value.strip("'\"")
-        values[key.strip()] = str(value)
-    return values
-
-
-def validate(skills_dir: Path, config_path: Path = CONFIG_PATH) -> list[str]:
+def validate(
+    skills_dir: Path,
+    config_path: Path = CONFIG_PATH,
+    repository_root: Path | None = None,
+) -> list[str]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     prefix = f"{config['skill_prefix']}-"
     locales = {str(item) for item in config["supported_locales"]}
@@ -133,6 +118,9 @@ def validate(skills_dir: Path, config_path: Path = CONFIG_PATH) -> list[str]:
             if "TODO" in text or "{{" in text or "}}" in text:
                 errors.append(f"{family}/{filename}: unfinished template markers are not allowed")
 
+    if repository_root is not None:
+        errors.extend(validate_root_catalogs(repository_root, skills_dir))
+
     return errors
 
 
@@ -150,7 +138,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skills-dir", type=Path, default=REPO_ROOT / "skills")
     args = parser.parse_args()
-    errors = validate(args.skills_dir)
+    repository_root = REPO_ROOT if args.skills_dir == REPO_ROOT / "skills" else None
+    errors = validate(args.skills_dir, repository_root=repository_root)
     if errors:
         for error in errors:
             print(f"ERROR: {error}")

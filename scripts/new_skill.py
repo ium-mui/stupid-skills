@@ -7,7 +7,11 @@ import argparse
 import json
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import TypedDict
+
+from stupid_skills import sync_family_catalog, sync_root_catalogs
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -15,11 +19,30 @@ CONFIG_PATH = REPO_ROOT / "config" / "repository.json"
 TEMPLATE_PATH = REPO_ROOT / "templates" / "SKILL.md.template"
 FAMILY_TEMPLATE_EN = REPO_ROOT / "templates" / "FAMILY_README.md.template"
 FAMILY_TEMPLATE_KO = REPO_ROOT / "templates" / "FAMILY_README.ko.md.template"
-VARIANTS_START = "<!-- variants:start -->"
-VARIANTS_END = "<!-- variants:end -->"
+
+class RepositoryConfig(TypedDict):
+    skill_prefix: str
+    default_locale: str
+    supported_locales: list[str]
 
 
-def load_config(path: Path = CONFIG_PATH) -> dict[str, object]:
+@dataclass(frozen=True, slots=True)
+class SkillInputError(ValueError):
+    message: str
+
+    def __str__(self) -> str:
+        return self.message
+
+
+@dataclass(frozen=True, slots=True)
+class SkillTemplateError(RuntimeError):
+    message: str
+
+    def __str__(self) -> str:
+        return self.message
+
+
+def load_config(path: Path = CONFIG_PATH) -> RepositoryConfig:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -40,32 +63,8 @@ def replace_markers(template: str, replacements: dict[str, str]) -> str:
     for marker, value in replacements.items():
         rendered = rendered.replace(marker, value)
     if "{{" in rendered or "}}" in rendered:
-        raise RuntimeError("a template contains an unresolved marker")
+        raise SkillTemplateError(message="a template contains an unresolved marker")
     return rendered
-
-
-def replace_variant_catalog(text: str, catalog: str) -> str:
-    start = text.find(VARIANTS_START)
-    end = text.find(VARIANTS_END)
-    if start == -1 or end == -1 or end < start:
-        raise RuntimeError("family README is missing variant catalog markers")
-    content_start = start + len(VARIANTS_START)
-    return text[:content_start] + f"\n{catalog}\n" + text[end:]
-
-
-def update_family_catalog(family_dir: Path) -> None:
-    variants = sorted(
-        entry.name
-        for entry in family_dir.iterdir()
-        if entry.is_dir() and (entry / "SKILL.md").is_file()
-    )
-    catalog = "\n".join(f"- [`{name}`]({name})" for name in variants)
-    for filename in ("README.md", "README.ko.md"):
-        path = family_dir / filename
-        path.write_text(
-            replace_variant_catalog(path.read_text(encoding="utf-8"), catalog),
-            encoding="utf-8",
-        )
 
 
 def create_skill(
@@ -92,17 +91,19 @@ def create_skill(
     behavior_slug = slugify(behavior)
     locale_slug = locale.strip().lower() if locale is not None else None
     if not behavior_slug:
-        raise ValueError("behavior must contain at least one ASCII letter or digit")
+        raise SkillInputError(message="behavior must contain at least one ASCII letter or digit")
     if locale_slug is not None and locale_slug not in supported_locales:
         choices = ", ".join(sorted(supported_locales))
-        raise ValueError(f"unsupported locale '{locale_slug}'; choose one of: {choices}")
+        raise SkillInputError(
+            message=f"unsupported locale '{locale_slug}'; choose one of: {choices}"
+        )
     if not one_line(description):
-        raise ValueError("description must not be empty")
+        raise SkillInputError(message="description must not be empty")
     cleaned_instructions = [one_line(item) for item in instructions if one_line(item)]
     if not cleaned_instructions:
-        raise ValueError("at least one instruction is required")
+        raise SkillInputError(message="at least one instruction is required")
     if not example_input.strip() or not example_output.strip():
-        raise ValueError("example input and output must not be empty")
+        raise SkillInputError(message="example input and output must not be empty")
 
     skill_name = (
         f"{prefix}-{behavior_slug}-{locale_slug}"
@@ -110,7 +111,7 @@ def create_skill(
         else f"{prefix}-{behavior_slug}"
     )
     if len(skill_name) > 63:
-        raise ValueError("generated skill name must be shorter than 64 characters")
+        raise SkillInputError(message="generated skill name must be shorter than 64 characters")
 
     target_root = skills_dir or REPO_ROOT / "skills"
     family_dir = target_root / behavior_slug
@@ -122,13 +123,15 @@ def create_skill(
     if family_dir.exists():
         for filename in ("README.md", "README.ko.md"):
             if not (family_dir / filename).is_file():
-                raise RuntimeError(f"existing family is missing {filename}: {family_dir}")
+                raise SkillTemplateError(
+                    message=f"existing family is missing {filename}: {family_dir}"
+                )
     else:
         description_en = one_line(family_description_en or "")
         description_ko = one_line(family_description_ko or "")
         if not description_en or not description_ko:
-            raise ValueError(
-                "new families require English and Korean family descriptions"
+            raise SkillInputError(
+                message="new families require English and Korean family descriptions"
             )
         family_dir.mkdir(parents=True)
         family_replacements = {
@@ -151,7 +154,6 @@ def create_skill(
 
     instruction_markdown = "\n".join(f"- {item}" for item in cleaned_instructions)
     description_text = one_line(description)
-    locale_label = locale_slug or "language-neutral"
     locale_rule = (
         f"- Keep this skill fixed to locale `{locale_slug}`; never detect or switch locale automatically."
         if locale_slug is not None
@@ -161,7 +163,7 @@ def create_skill(
         "{{SKILL_NAME_YAML}}": json.dumps(skill_name, ensure_ascii=False),
         "{{DESCRIPTION_YAML}}": json.dumps(description_text, ensure_ascii=False),
         "{{TITLE}}": display_title,
-        "{{LOCALE_LABEL}}": locale_label,
+        "{{LOCALE_LABEL}}": locale_slug or "language-neutral",
         "{{LOCALE_RULE}}": locale_rule,
         "{{DESCRIPTION_TEXT}}": description_text,
         "{{INSTRUCTIONS}}": instruction_markdown + "\n",
@@ -174,7 +176,8 @@ def create_skill(
     target.mkdir(parents=True)
     output = target / "SKILL.md"
     output.write_text(rendered, encoding="utf-8")
-    update_family_catalog(family_dir)
+    sync_family_catalog(family_dir)
+    sync_root_catalogs(target_root.parent, target_root)
     return output
 
 
@@ -184,7 +187,7 @@ def prompt_value(current: str | None, label: str, default: str | None = None) ->
     if not sys.stdin.isatty():
         if default is not None:
             return default
-        raise ValueError(f"missing required option: {label}")
+        raise SkillInputError(message=f"missing required option: {label}")
     suffix = f" [{default}]" if default else ""
     value = input(f"{label}{suffix}: ").strip()
     return value or (default or "")
@@ -194,7 +197,7 @@ def collect_instructions(current: list[str] | None) -> list[str]:
     if current:
         return current
     if not sys.stdin.isatty():
-        raise ValueError("provide at least one --instruction")
+        raise SkillInputError(message="provide at least one --instruction")
     print("Instructions (enter a blank line when finished):")
     values: list[str] = []
     while True:
@@ -277,12 +280,12 @@ def main() -> int:
             example_output=example_output,
             skills_dir=args.skills_dir,
         )
-    except (ValueError, FileExistsError, RuntimeError) as error:
+    except (FileExistsError, SkillInputError, SkillTemplateError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
     print(f"Created {output.relative_to(REPO_ROOT) if output.is_relative_to(REPO_ROOT) else output}")
-    print("Next: review the instructions, update both top-level README catalogs, and run `make check`.")
+    print("Next: review the instructions and run `make check`.")
     return 0
 
 

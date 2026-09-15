@@ -8,23 +8,25 @@
 
 ## 제공 스킬
 
-| 스킬 | 언어 | 동작 |
-| --- | --- | --- |
-| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | 영어(미국) | 일반 문장을 `kkwettu`로 바꿉니다 |
-| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | 한국어 | 일반 문장을 `꿰뚜`로 바꿉니다 |
+<!-- skills:start -->
+| 스킬 | 로케일 | 동작 | 설명 |
+| --- | --- | --- | --- |
+| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. |
+| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. |
+<!-- skills:end -->
 
 ## 설치 및 사용
 
-저장소를 복제한 다음 원하는 언어 변형을 Codex 스킬 디렉터리로 복사합니다.
+저장소를 복제하고 제공되는 변형을 확인한 다음 원하는 스킬을 설치합니다.
 
 ```sh
 git clone https://github.com/ium-mui/stupid-skills.git
 cd stupid-skills
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R skills/kkwettu/stupid-kkwettu-ko "${CODEX_HOME:-$HOME/.codex}/skills/"
+python3 scripts/stupid_skills.py list
+python3 scripts/stupid_skills.py install stupid-kkwettu-ko
 ```
 
-필요하다면 Codex를 다시 시작하거나 스킬 목록을 새로 고친 후 `$stupid-kkwettu-ko`처럼 설치한 스킬 이름으로 호출합니다.
+설치 위치의 기본값은 `${CODEX_HOME}/skills` 또는 `~/.codex/skills`입니다. 다른 곳에 설치하려면 `--destination PATH`를 지정하세요. 기존 스킬은 덮어쓰지 않습니다. 필요하다면 Codex를 다시 시작하거나 스킬 목록을 새로 고친 후 `$stupid-kkwettu-ko`처럼 설치한 스킬 이름으로 호출합니다.
 
 같은 동작의 언어 변형은 한 번에 하나만 설치하는 것을 권장합니다. 각 변형은 언어를 자동으로 감지하거나 다른 언어로 전환하지 않습니다.
 
@@ -46,7 +48,7 @@ skills/<behavior>/
     └── SKILL.md
 ```
 
-생성기는 두 패밀리 README의 변형 목록을 자동으로 갱신합니다. 생성된 파일을 검토하고 최상위 영어·한국어 README 목록에 스킬을 추가한 다음 아래 명령을 실행합니다.
+생성기는 두 패밀리 README의 변형 목록과 최상위 영어·한국어 카탈로그를 자동으로 갱신합니다. 생성된 파일을 검토한 다음 아래 명령을 실행합니다.
 
 ```sh
 make check
