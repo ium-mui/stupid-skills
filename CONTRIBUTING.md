@@ -48,8 +48,10 @@ The generator creates both family READMEs when needed, updates their variant cat
 1. Review the generated `SKILL.md` and make its behavior unambiguous.
 2. Add a concise, discriminating frontmatter description.
 3. Keep at least one realistic input/output example.
-4. Update the skill tables in `README.md` and `README.ko.md`.
+4. Confirm the generator updated the family and top-level catalogs.
 5. Run `make check`.
+
+The generated catalog regions are delimited by HTML comments. Do not edit those regions manually; run `make sync-catalog` after moving or renaming a skill.
 
 ## Add a locale
 
