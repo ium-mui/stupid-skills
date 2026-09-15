@@ -60,6 +60,31 @@ class BoundaryTests(unittest.TestCase):
                 skills_dir=Path(temporary_directory) / "skills",
             )
 
+    def test_frontmatter_without_yaml_separator_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            skills_dir = Path(temporary_directory) / "skills"
+            output = create_skill(
+                behavior="beep",
+                locale="ko",
+                description="Replace ordinary prose with a beep.",
+                instructions=["Replace ordinary prose with beep."],
+                example_input="안녕하세요",
+                example_output="삐",
+                family_description_en="A family of beeping skills.",
+                family_description_ko="삐 소리를 내는 스킬 패밀리입니다.",
+                skills_dir=skills_dir,
+            )
+            output.write_text(
+                output.read_text(encoding="utf-8")
+                .replace('name: "', 'name:"')
+                .replace('description: "', 'description:"'),
+                encoding="utf-8",
+            )
+
+            errors = validate(skills_dir)
+
+            self.assertTrue(any("frontmatter" in error for error in errors))
+
     def test_generated_catalog_contains_skill_installer_url(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             repository_root = Path(temporary_directory)

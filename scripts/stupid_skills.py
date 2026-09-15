@@ -89,11 +89,12 @@ def parse_frontmatter(text: str) -> dict[str, str]:
 
     values: dict[str, str] = {}
     for line in text[4:end].splitlines():
-        if not line or line.startswith((" ", "\t")) or ":" not in line:
+        key, separator, raw_value = line.partition(":")
+        valid_separator = separator == ":" and raw_value.startswith(" ")
+        if not line or line.startswith((" ", "\t")) or not valid_separator:
             raise FrontmatterFormatError(
                 message="frontmatter must use top-level key/value lines"
             )
-        key, raw_value = line.split(":", 1)
         raw_value = raw_value.strip()
         normalized_key = key.strip()
         if (
