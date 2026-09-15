@@ -7,8 +7,8 @@ Kkwettu is a joke-skill family that replaces every ordinary word with one meanin
 ## Variants
 
 <!-- variants:start -->
-- [`stupid-kkwettu-en-us`](stupid-kkwettu-en-us)
-- [`stupid-kkwettu-ko`](stupid-kkwettu-ko)
+- [`stupid-kkwettu-en-us`](stupid-kkwettu-en-us): `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-en-us`
+- [`stupid-kkwettu-ko`](stupid-kkwettu-ko): `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko`
 <!-- variants:end -->
 
-Each subdirectory listed above is an independently installable skill. Copy the variant directory itself, not this family directory, into your Codex skills directory.
+Each subdirectory listed above is an independently installable skill. Run its generated `$skill-installer` command; do not install this family directory.

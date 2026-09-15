@@ -9,26 +9,25 @@
 ## 제공 스킬
 
 <!-- skills:start -->
-| 스킬 | 로케일 | 동작 | 설명 |
-| --- | --- | --- | --- |
-| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. |
-| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. |
+| 스킬 | 로케일 | 동작 | 설명 | 설치 |
+| --- | --- | --- | --- | --- |
+| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-en-us` |
+| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko` |
 <!-- skills:end -->
 
 ## 설치 및 사용
 
-저장소를 복제하고 제공되는 변형을 확인한 다음 원하는 스킬을 설치합니다.
+Codex 프롬프트에서 설치할 스킬 폴더의 GitHub URL과 함께 기본 제공 스킬 설치기를 호출합니다. 한국어 Kkwettu 변형은 다음과 같이 설치합니다.
 
 ```sh
-git clone https://github.com/ium-mui/stupid-skills.git
-cd stupid-skills
-python3 scripts/stupid_skills.py list
-python3 scripts/stupid_skills.py install stupid-kkwettu-ko
+$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko
 ```
 
-설치 위치의 기본값은 `${CODEX_HOME}/skills` 또는 `~/.codex/skills`입니다. 다른 곳에 설치하려면 `--destination PATH`를 지정하세요. 기존 스킬은 덮어쓰지 않습니다. 필요하다면 Codex를 다시 시작하거나 스킬 목록을 새로 고친 후 `$stupid-kkwettu-ko`처럼 설치한 스킬 이름으로 호출합니다.
+다른 변형은 아래 목록에 자동 생성된 설치 명령을 사용하세요. URL의 마지막 폴더는 동작 패밀리가 아니라 실제 설치 단위인 `stupid-*` 폴더여야 합니다. 설치기는 기존 스킬을 덮어쓰지 않습니다. 설치한 스킬은 다음 턴부터 사용할 수 있으며 `$stupid-kkwettu-ko`처럼 이름으로 호출합니다.
 
 같은 동작의 언어 변형은 한 번에 하나만 설치하는 것을 권장합니다. 각 변형은 언어를 자동으로 감지하거나 다른 언어로 전환하지 않습니다.
+
+스킬 설치에는 `make`가 필요하지 않습니다. `make`는 이 저장소를 clone한 기여자가 스킬을 생성하고 목록을 동기화하고 제출 내용을 검증할 때 사용하는 하네스입니다.
 
 ## 새 스킬 추가
 

@@ -8,7 +8,12 @@ import json
 import re
 from pathlib import Path
 
-from stupid_skills import parse_frontmatter, validate_root_catalogs
+from stupid_skills import (
+    FrontmatterFormatError,
+    install_command_for,
+    parse_frontmatter,
+    validate_root_catalogs,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +49,10 @@ def validate(
     for family_dir in family_dirs:
         family = family_dir.name
         if not NAME_PATTERN.fullmatch(family):
-            errors.append(f"{family}: family names must use lowercase letters, digits, and single hyphens")
+            errors.append(
+                f"{family}: family names must use lowercase letters, digits, "
+                "and single hyphens"
+            )
         if family.startswith(prefix):
             errors.append(f"{family}: family names must not include the '{prefix}' prefix")
 
@@ -66,7 +74,10 @@ def validate(
             if len(name) > 63:
                 errors.append(f"{family}/{name}: name must be shorter than 64 characters")
             if not NAME_PATTERN.fullmatch(name):
-                errors.append(f"{family}/{name}: use lowercase letters, digits, and single hyphens only")
+                errors.append(
+                    f"{family}/{name}: use lowercase letters, digits, "
+                    "and single hyphens only"
+                )
 
             localized_names = {f"{prefix}{family}-{locale}" for locale in locales}
             language_neutral_name = f"{prefix}{family}"
@@ -83,7 +94,11 @@ def validate(
                 continue
 
             text = skill_file.read_text(encoding="utf-8")
-            frontmatter = parse_frontmatter(text)
+            try:
+                frontmatter = parse_frontmatter(text)
+            except FrontmatterFormatError as error:
+                errors.append(f"{label}: invalid frontmatter: {error}")
+                continue
             if not frontmatter:
                 errors.append(f"{label}: valid YAML-style frontmatter is required")
                 continue
@@ -108,17 +123,19 @@ def validate(
                 end = text.find(VARIANTS_END, start)
                 actual_catalog = text[start:end].strip()
                 expected_catalog = "\n".join(
-                    f"- [`{skill_dir.name}`]({skill_dir.name})"
+                    f"- [`{skill_dir.name}`]({skill_dir.name}): "
+                    f"`{install_command_for(family, skill_dir.name)}`"
                     for skill_dir in sorted(skill_dirs)
                 )
                 if actual_catalog != expected_catalog:
                     errors.append(
-                        f"{family}/{filename}: variant catalog must exactly match skill directories"
+                        f"{family}/{filename}: variant catalog must exactly match "
+                        "skill directories"
                     )
             if "TODO" in text or "{{" in text or "}}" in text:
                 errors.append(f"{family}/{filename}: unfinished template markers are not allowed")
 
-    if repository_root is not None:
+    if repository_root is not None and not errors:
         errors.extend(validate_root_catalogs(repository_root, skills_dir))
 
     return errors

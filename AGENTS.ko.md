@@ -11,6 +11,7 @@
 - 언어 중립 스킬은 `skills/<behavior>/stupid-<behavior>/`에 둡니다.
 - 스킬 이름은 영문 소문자, 숫자와 하이픈으로 작성합니다.
 - 폴더 이름과 YAML frontmatter의 `name`을 동일하게 유지합니다.
+- 저장소 전용 YAML 확장 없이 결정적으로 검증할 수 있도록 frontmatter의 `name`과 `description`을 JSON 형식의 따옴표 문자열로 작성합니다.
 - 모든 스킬 폴더 루트에 대문자 `SKILL.md`를 둡니다.
 - 변형이 하나뿐이거나 언어 중립 스킬 하나만 있어도 모든 동작 패밀리에 `README.md`와 `README.ko.md`를 둡니다.
 - 동작 패밀리 폴더 바로 아래에는 `SKILL.md`나 두 패밀리 README 이외의 파일을 두지 않습니다.
@@ -28,6 +29,7 @@
 
 ## 작업 절차
 
+- 공개 설치 방법은 `$skill-installer install <GitHub 스킬 폴더 URL>`로 안내합니다. `make`와 `scripts/` 명령은 저장소를 clone해 작업하는 기여자용으로 유지합니다.
 - 새 스킬을 만들 때 `make new-skill`을 우선 사용합니다.
 - 생성 과정에서 기존 스킬을 덮어쓰지 않습니다.
 - 스킬, 설정, 템플릿, 스크립트 또는 테스트를 변경한 후 `make check`를 실행합니다.

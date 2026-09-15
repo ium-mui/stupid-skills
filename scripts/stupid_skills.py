@@ -29,6 +29,7 @@ from typing import assert_never
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+CONFIG_PATH = REPO_ROOT / "config" / "repository.json"
 SKILLS_START = "<!-- skills:start -->"
 SKILLS_END = "<!-- skills:end -->"
 VARIANTS_START = "<!-- variants:start -->"
@@ -60,10 +61,23 @@ class CatalogFormatError(Exception):
         return f"catalog markers are missing or out of order: {self.path}"
 
 
+@dataclass(frozen=True, slots=True)
+class FrontmatterFormatError(Exception):
+    message: str
+
+    def __str__(self) -> str:
+        return self.message
+
+
 class Command(StrEnum):
     LIST = "list"
     INSTALL = "install"
     SYNC = "sync"
+
+
+def repository_tree_url(config_path: Path = CONFIG_PATH) -> str:
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    return str(config["repository_tree_url"]).rstrip("/")
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -75,19 +89,32 @@ def parse_frontmatter(text: str) -> dict[str, str]:
 
     values: dict[str, str] = {}
     for line in text[4:end].splitlines():
-        if ":" not in line:
-            continue
+        if not line or line.startswith((" ", "\t")) or ":" not in line:
+            raise FrontmatterFormatError(
+                message="frontmatter must use top-level key/value lines"
+            )
         key, raw_value = line.split(":", 1)
         raw_value = raw_value.strip()
-        try:
-            value = (
-                json.loads(raw_value)
-                if raw_value.startswith('"')
-                else raw_value.strip("'\"")
+        normalized_key = key.strip()
+        if (
+            not normalized_key
+            or normalized_key in values
+            or not raw_value.startswith('"')
+        ):
+            raise FrontmatterFormatError(
+                message=(
+                    "frontmatter keys must be unique and values must be "
+                    "JSON-quoted strings"
+                )
             )
-        except json.JSONDecodeError:
-            value = raw_value.strip("'\"")
-        values[key.strip()] = str(value)
+        try:
+            value = json.loads(raw_value)
+        except json.JSONDecodeError as error:
+            message = f"invalid quoted frontmatter value: {error.msg}"
+            raise FrontmatterFormatError(message=message) from error
+        if not isinstance(value, str):
+            raise FrontmatterFormatError(message="frontmatter values must be strings")
+        values[normalized_key] = value
     return values
 
 
@@ -118,16 +145,22 @@ def discover_skills(skills_dir: Path = REPO_ROOT / "skills") -> tuple[SkillRecor
     return tuple(records)
 
 
+def install_command_for(behavior: str, name: str) -> str:
+    url = repository_tree_url()
+    return f"$skill-installer install {url}/skills/{behavior}/{name}"
+
+
 def render_catalog(records: tuple[SkillRecord, ...], *, korean: bool) -> str:
     header = (
-        "| 스킬 | 로케일 | 동작 | 설명 |"
+        "| 스킬 | 로케일 | 동작 | 설명 | 설치 |"
         if korean
-        else "| Skill | Locale | Behavior | Description |"
+        else "| Skill | Locale | Behavior | Description | Install |"
     )
-    rows = [header, "| --- | --- | --- | --- |"]
+    rows = [header, "| --- | --- | --- | --- | --- |"]
     rows.extend(
         f"| [`{record.name}`](skills/{record.behavior}/{record.name}) | "
-        f"`{record.locale}` | `{record.behavior}` | {record.description} |"
+        f"`{record.locale}` | `{record.behavior}` | {record.description} | "
+        f"`{install_command_for(record.behavior, record.name)}` |"
         for record in records
     )
     return "\n".join(rows)
@@ -144,11 +177,15 @@ def replace_catalog(text: str, catalog: str, *, path: Path) -> str:
 
 def sync_family_catalog(family_dir: Path) -> None:
     variants = sorted(
-        entry.name
+        entry
         for entry in family_dir.iterdir()
         if entry.is_dir() and (entry / "SKILL.md").is_file()
     )
-    catalog = "\n".join(f"- [`{name}`]({name})" for name in variants)
+    catalog = "\n".join(
+        f"- [`{variant.name}`]({variant.name}): "
+        f"`{install_command_for(family_dir.name, variant.name)}`"
+        for variant in variants
+    )
     for filename in ("README.md", "README.ko.md"):
         path = family_dir / filename
         text = path.read_text(encoding="utf-8")
@@ -259,7 +296,12 @@ def main() -> int:
                 print("Synchronized top-level skill catalogs.")
             case unreachable:
                 assert_never(unreachable)
-    except (CatalogFormatError, FileExistsError, SkillNotFoundError) as error:
+    except (
+        CatalogFormatError,
+        FileExistsError,
+        FrontmatterFormatError,
+        SkillNotFoundError,
+    ) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 0

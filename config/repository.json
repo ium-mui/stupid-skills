@@ -1,5 +1,6 @@
 {
   "skill_prefix": "stupid",
+  "repository_tree_url": "https://github.com/ium-mui/stupid-skills/tree/main",
   "default_locale": "en-us",
   "supported_locales": [
     "en-us",

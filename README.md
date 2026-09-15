@@ -9,26 +9,25 @@ Every installable skill starts with `stupid-` and belongs to a documented behavi
 ## Available skills
 
 <!-- skills:start -->
-| Skill | Locale | Behavior | Description |
-| --- | --- | --- | --- |
-| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. |
-| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. |
+| Skill | Locale | Behavior | Description | Install |
+| --- | --- | --- | --- | --- |
+| [`stupid-kkwettu-en-us`](skills/kkwettu/stupid-kkwettu-en-us) | `en-us` | `kkwettu` | Replace ordinary user-visible prose with 'kkwettu'. Use for the en-US variant of the stupid Kkwettu joke skill; never switch locale automatically. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-en-us` |
+| [`stupid-kkwettu-ko`](skills/kkwettu/stupid-kkwettu-ko) | `ko` | `kkwettu` | Replace ordinary user-visible prose with '꿰뚜'. Use for the Korean variant of the stupid Kkwettu joke skill; never switch locale automatically. | `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko` |
 <!-- skills:end -->
 
 ## Install and use
 
-Clone the repository, list the available variants, and install the one you want.
+From a Codex prompt, invoke the built-in skill installer with the GitHub URL of the exact skill directory. For the Korean Kkwettu variant:
 
 ```sh
-git clone https://github.com/ium-mui/stupid-skills.git
-cd stupid-skills
-python3 scripts/stupid_skills.py list
-python3 scripts/stupid_skills.py install stupid-kkwettu-en-us
+$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko
 ```
 
-The installer defaults to `${CODEX_HOME}/skills` or `~/.codex/skills`. Pass `--destination PATH` to install elsewhere. It refuses to overwrite an existing skill. Restart or reload Codex if needed, then invoke the installed skill by name, for example `$stupid-kkwettu-en-us`.
+Use the install command in the catalog below for any other variant. The final URL segment must be the installable `stupid-*` directory, not its behavior-family parent. The installer refuses to overwrite an existing skill. The installed skill becomes available on the next turn; invoke it by name, for example `$stupid-kkwettu-ko`.
 
 Install one locale variant of the same behavior at a time. A variant never detects or switches locale automatically.
+
+`make` is not required to install a skill. It is the contributor harness used after cloning this repository to generate, synchronize, and validate submissions.
 
 ## Add a new skill
 

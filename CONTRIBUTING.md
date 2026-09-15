@@ -4,6 +4,8 @@
 
 Contributions should keep stupid skills easy to discover, install, and understand.
 
+Consumers install a skill directly from its GitHub folder with `$skill-installer`. The `make` targets below are only the local contribution and validation harness.
+
 ## Naming rules
 
 - Group variants under `skills/<behavior>/`.
@@ -12,6 +14,7 @@ Contributions should keep stupid skills easy to discover, install, and understan
 - Use lowercase ASCII letters, digits, and single hyphens.
 - Keep the name shorter than 64 characters.
 - Make the folder name and frontmatter `name` identical.
+- JSON-quote the frontmatter `name` and `description` values.
 - Use only locales listed in `config/repository.json`.
 
 Examples:
@@ -67,3 +70,4 @@ Use a language code such as `ko` when regional behavior does not matter. Use a r
 - A localized skill keeps its locale fixed and does not change automatically.
 - English and Korean public documentation remain synchronized.
 - `make check` passes.
+- The generated catalog exposes a `$skill-installer` URL ending at the submitted `stupid-*` directory.

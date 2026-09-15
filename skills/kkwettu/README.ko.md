@@ -7,8 +7,8 @@ Kkwettu는 일반 문장의 모든 단어를 의미 없는 토큰 하나로 바�
 ## 변형
 
 <!-- variants:start -->
-- [`stupid-kkwettu-en-us`](stupid-kkwettu-en-us)
-- [`stupid-kkwettu-ko`](stupid-kkwettu-ko)
+- [`stupid-kkwettu-en-us`](stupid-kkwettu-en-us): `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-en-us`
+- [`stupid-kkwettu-ko`](stupid-kkwettu-ko): `$skill-installer install https://github.com/ium-mui/stupid-skills/tree/main/skills/kkwettu/stupid-kkwettu-ko`
 <!-- variants:end -->
 
-위에 표시된 각 하위 폴더는 독립적으로 설치할 수 있는 스킬입니다. 이 패밀리 폴더가 아니라 사용할 변형 폴더 자체를 Codex 스킬 디렉터리에 복사하세요.
+위에 표시된 각 하위 폴더는 독립적으로 설치할 수 있는 스킬입니다. 자동 생성된 `$skill-installer` 명령을 실행하고 이 패밀리 폴더 자체는 설치하지 마세요.
